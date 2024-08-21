@@ -4,7 +4,11 @@ CFLAGS = -Wall -Wextra -Werror
 
 NAME = lemipc 
 
-SRCS = src/main.c
+SRCS = src/main.c \
+       src/init_sem.c \
+       src/init_shm.c \
+       src/init_msgq.c \
+       src/clear_ipcs.c
 
 LIBFT = -L. libft/libft.a 
 

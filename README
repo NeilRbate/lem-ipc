@@ -1,0 +1,4 @@
+
+-If shm doesn't exist, create shared memory space and semaphore
+
+-Check if shm exist, if true, create thread using this shm
