@@ -15,6 +15,10 @@
 #include <semaphore.h>
 #include <mqueue.h>
 
+/* For perror */
+#include <stdio.h>
+#include <errno.h>
+
 
 
 //*******DEFINE ZONE******
@@ -28,12 +32,14 @@
 #define	SHM_KEY		"/SHM_KEY\0"
 #define	SHM_SIZE	sizeof(t_data)
 
+#define	SUCCESS		0x000
+#define	FAILURE		0xfff
 
 //*******PROTO ZONE*******
 
 typedef struct {
 
-	int	shm_id;
+	int	shm_fd;
 	sem_t	*sem;
 	mqd_t	msgq;
 	short	player_count;
@@ -52,7 +58,7 @@ sem_t
  * Return -1 on error;
  */
 int
-init_shm();
+init_shm(t_data *data);
 
 /*
  * Init IPC msgq, if it already existm return it's ID
@@ -67,7 +73,7 @@ init_msgq();
  * Return 0 on success
  */
 int
-clear_ipcs(sem_t *sem_id, int shm_id, mqd_t msgq_id);
+clear_ipcs(t_data *data);
 
 
 #endif
