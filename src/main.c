@@ -8,7 +8,6 @@ void	signalHandler(int _)
 	/* Signal endler, here to execute atexit() on ctrl-c */
 	(void)_;
 	ft_printf("signal catch !\n");
-	clear_ipcs();
 	exit(EXIT_FAILURE);
 }
 

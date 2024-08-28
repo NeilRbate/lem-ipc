@@ -29,6 +29,8 @@
 //*******DEFINE ZONE******
 
 #define PLAYER_MAX	60
+#define	BOARD_WIDTH	8
+#define	BOARD_HEIGHT	8
 
 #define	SEM_KEY		"/SEM_KEY\0"
 
@@ -49,6 +51,7 @@ typedef struct {
 	int	shm_fd;
 	short	player_count;
 	short	team_player[9];
+	short	board[BOARD_WIDTH][BOARD_HEIGHT];
 
 } t_data;
 
