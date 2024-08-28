@@ -1,7 +1,5 @@
 #include "../include/lem-ipc.h"
 
-extern t_data	*data;
-extern t_player player;
 
 t_data
 *init_shm()
@@ -11,22 +9,18 @@ t_data
 	/*Try to open existing shared memory */
 	fd = shm_open(SHM_KEY, O_RDWR, S_IRUSR | S_IWUSR);
 	if (fd != -1) {
+		/* Shared memory already exist, just get data */
 		data = mmap(NULL, sizeof(t_data), 
 			PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
+		/* Close shm fd */
+		close(fd);
+
 		if (data == MAP_FAILED)
 			goto failure;
-
-		ft_printf("Existing shared memory join !\n");
-		ft_printf("data->sem %d\n", data->sem);
-
-		//Sem lock
-		sem_wait(data->sem);
-		data->player_count++;
-		player.player_id = data->player_count;
-		sem_post(data->sem);
-
-		return data;
+		ft_printf("Join existing shared memory !\n");
+		player.is_first = 1;
+		goto exist;
 	}
 
 	/* Create shared memory */
@@ -40,34 +34,36 @@ t_data
 	/* Set shm size */
 	if (ftruncate(fd, sizeof(t_data)) == -1)
 		goto failure;
-
 	/* Create mmap to fill on shared memory */
 	data = mmap(NULL, sizeof(t_data), 
 			PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
+	/* Close shm fd */
+	close(fd);
+
 	if (data == MAP_FAILED)
 		goto failure;
 
-	/* Init semaphore and message queue */
-	if ((data->sem = init_sem()) == NULL)
-		goto failure;
-
-	if ((data->msgq = init_msgq(data)) == -1)
-		goto failure;
-
+	ft_memset(data, 0, sizeof(t_data));
 	ft_printf("Create new shared memory !\n");
 
-	close(fd);
-	sem_wait(data->sem);
+exist:
+	/* init semaphore and message queue */
+	init_sem();
+	init_msgq(data);
+
+	sem_wait(player.sem);
+
 	data->player_count++;
+	data->team_player[player.team_id]++;
 	player.player_id = data->player_count;
-	sem_post(data->sem);
+
+	sem_post(player.sem);
 	return data;
 
 failure:
 
 	perror("shm_init error");
-	close(fd);
 	exit(EXIT_FAILURE);
 
 	return NULL;

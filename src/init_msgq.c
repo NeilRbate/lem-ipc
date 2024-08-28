@@ -1,6 +1,5 @@
 #include "../include/lem-ipc.h"
 
-extern t_data	*data;
 
 mqd_t
 init_msgq()
@@ -14,12 +13,14 @@ init_msgq()
 	mq = mq_open(MSGQ_KEY, O_CREAT | O_RDWR, 
 			S_IRUSR | S_IWUSR, NULL);
 
-	data->msgq_attr = attr;
+	player.msgq_attr = attr;
 
 	if (mq == -1) {
 		perror("msgq error");
 		exit(EXIT_FAILURE);
 	}
+
+	player.msgq = mq;
 
 
 	return 0;

@@ -6,12 +6,19 @@ sem_t
 	/* Create shared semaphore and return it */
 	sem_t	*sem = NULL;
 
+	sem = sem_open(SEM_KEY, O_RDWR);
+	if (sem != SEM_FAILED) {
+		player.sem = sem;
+		return sem;
+	}
+
 	sem = sem_open(SEM_KEY, O_CREAT, 
 			S_IRUSR | S_IWUSR, 1);
 	if (sem == SEM_FAILED) {
 		perror("semaphore error");
-		return NULL;
+		exit(EXIT_FAILURE);
 	}
+	player.sem = sem;
 
 	return sem;
 }

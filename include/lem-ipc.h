@@ -47,16 +47,18 @@
 typedef struct {
 
 	int	shm_fd;
-	sem_t	*sem;
-	mqd_t	msgq;
-	struct mq_attr	msgq_attr;
 	short	player_count;
+	short	team_player[9];
 
 } t_data;
 
 typedef struct {
 	int	player_id;
 	int	team_id;
+	int	is_first;
+	sem_t	*sem;
+	mqd_t	msgq;
+	struct mq_attr	msgq_attr;
 } t_player;
 
 
@@ -89,6 +91,13 @@ init_msgq();
  */
 void
 clear_ipcs();
+
+
+/*
+ * Game routine
+ */
+void	
+start_routine();
 
 
 #endif

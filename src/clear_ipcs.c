@@ -1,15 +1,15 @@
 #include "../include/lem-ipc.h"
 
-extern t_data	*data;
-
 void
 clear_ipcs()
 {
 	if (!data)
 		return;
-	sem_wait(data->sem);
+	sem_wait(player.sem);
 	data->player_count--;
-	sem_post(data->sem);
+	data->team_player[player.team_id]--;
+	sem_post(player.sem);
+	sem_close(player.sem);
 	if (data->player_count <= 0) {
 		sem_unlink(SEM_KEY);
 		mq_unlink(MSGQ_KEY);
