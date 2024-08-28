@@ -1,22 +1,32 @@
 #include "../include/lem-ipc.h"
 
+t_data *data;
+t_player player;
+
+void	signalHandler(int _)
+{
+	/* Signal endler, here to execute atexit() on ctrl-c */
+	(void)_;
+	ft_printf("signal catch !\n");
+	exit(EXIT_FAILURE);
+}
+
 int	main()
 {
-	t_data	data;
-	short	area[64];
+	/* Catch return and execute clear_ipcs function */
+	int cr = atexit(clear_ipcs);
+	assert(cr == 0);
 
-	ft_memset(area, 0, sizeof(short) * 64);
+	/* Catch signal to execute clear_ipcs on close */
+	signal(SIGINT, signalHandler);
 
-	init_shm(&data);
-	data.sem = init_sem();
-	data.msgq = init_msgq();
+	/* Init data */
+	data = init_shm();
 
-	if (data.sem == NULL || data.msgq == 0)
-		return clear_ipcs(&data);
+	ft_printf("hello from %d player !\n", player.player_id);
 
+	while(1) {}
 	//Do some stuff
 	
-	return clear_ipcs(&data);
-
 	return	0;
 }

@@ -3,5 +3,15 @@
 sem_t
 *init_sem()
 {
-	return NULL;
+	/* Create shared semaphore and return it */
+	sem_t	*sem = NULL;
+
+	sem = sem_open(SEM_KEY, O_CREAT, 
+			S_IRUSR | S_IWUSR, 1);
+	if (sem == SEM_FAILED) {
+		perror("semaphore error");
+		return NULL;
+	}
+
+	return sem;
 }

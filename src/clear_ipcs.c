@@ -1,18 +1,19 @@
 #include "../include/lem-ipc.h"
 
-int
-clear_ipcs(t_data *data)
+extern t_data	*data;
+
+void
+clear_ipcs()
 {
-	ft_printf("sem_id -> %d, shm_id -> %d, msgq_id -> %d\n"
-			, data->sem, data->shm_fd, data->msgq);
-	
-	if (data->sem != NULL)
-		sem_close(data->sem);
-	if (data->msgq != 0)
-		mq_close(data->msgq);
-	if (data->shm_fd != -1) {
-		close(data->shm_fd);
+	if (!data)
+		return;
+	sem_wait(data->sem);
+	data->player_count--;
+	sem_post(data->sem);
+	if (data->player_count <= 0) {
+		sem_unlink(SEM_KEY);
+		mq_unlink(MSGQ_KEY);
 		shm_unlink(SHM_KEY);
 	}
-	return 0;
+	munmap(data, sizeof(t_data));
 }

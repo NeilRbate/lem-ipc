@@ -19,15 +19,22 @@
 #include <stdio.h>
 #include <errno.h>
 
+/* For atexit */
+#include <stdlib.h>
+#include <assert.h>
 
+/* For Signal */
+#include <signal.h>
 
 //*******DEFINE ZONE******
 
 #define PLAYER_MAX	60
 
-#define	SEM_KEY		"/SME_KEY\0"
+#define	SEM_KEY		"/SEM_KEY\0"
 
 #define	MSGQ_KEY	"/MSG_KEY\0"
+#define	MSGQ_SIZE	1024
+#define	MSGQ_COUNT	32
 
 #define	SHM_KEY		"/SHM_KEY\0"
 #define	SHM_SIZE	sizeof(t_data)
@@ -42,10 +49,19 @@ typedef struct {
 	int	shm_fd;
 	sem_t	*sem;
 	mqd_t	msgq;
+	struct mq_attr	msgq_attr;
 	short	player_count;
 
 } t_data;
 
+typedef struct {
+	int	player_id;
+	int	team_id;
+} t_player;
+
+
+extern t_data	*data;
+extern t_player player;
 
 /*
  * Init IPC semaphoreand return sem_t struct
@@ -55,10 +71,10 @@ sem_t
 
 /*
  * Init IPC shared memory, if it already exist, return it's ID
- * Return -1 on error;
+ * Return NULL on error;
  */
-int
-init_shm(t_data *data);
+t_data
+*init_shm();
 
 /*
  * Init IPC msgq, if it already existm return it's ID
@@ -70,10 +86,9 @@ init_msgq();
 
 /*
  * Clear IPC shared memory and semaphore, exit if fail
- * Return 0 on success
  */
-int
-clear_ipcs(t_data *data);
+void
+clear_ipcs();
 
 
 #endif
