@@ -1,5 +1,17 @@
 #include "../include/lem-ipc.h"
 
+static void
+init_player()
+{
+	sem_wait(player.sem);
+	data->player_count++;
+	player.player_id = data->player_count;
+	data->team_player[player.team_id]++;
+	add_team_player();
+	sem_post(player.sem);
+
+}
+
 t_data
 *init_shm()
 {
@@ -51,11 +63,7 @@ exist:
 	init_msgq(data);
 	
 	/* Init player value */
-	sem_wait(player.sem);
-	data->player_count++;
-	player.player_id = data->player_count;
-	data->team_player[player.team_id]++;
-	sem_post(player.sem);
+	init_player();
 
 	return data;
 

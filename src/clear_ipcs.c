@@ -6,6 +6,7 @@ clear_player_position()
 	t_player_pos pos = find_player_position(player.player_id);
 	if (data->board[pos.width][pos.height] == player.player_id)
 		data->board[pos.width][pos.height] = 0;
+	del_team_player();
 }
 
 void

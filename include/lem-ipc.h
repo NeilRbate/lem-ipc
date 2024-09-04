@@ -2,7 +2,7 @@
 #define __LEM_IPC__
 
 
-//*******INCLUDE ZONE*******
+/*******INCLUDE ZONE*******/
 
 //Libft proto
 #include "../libft/libft.h"
@@ -26,7 +26,7 @@
 /* For Signal */
 #include <signal.h>
 
-//*******DEFINE ZONE******
+/*******DEFINE ZONE******/
 
 #define PLAYER_MAX	60
 #define	BOARD_WIDTH	16
@@ -56,18 +56,9 @@
 #define CYN		"\x1B[36m"
 #define WHT		"\x1B[37m"
 
-//*******PROTO ZONE*******
+/*******PROTO ZONE*******/
 
-typedef struct {
-
-	int	shm_fd;
-	int	is_end;
-	short	player_count;
-	short	team_player[9];
-	short	board[BOARD_WIDTH][BOARD_HEIGHT];
-
-} t_data;
-
+/* Struct for player data, each player have is own */
 typedef struct {
 	int	player_id;
 	int	team_id;
@@ -77,11 +68,25 @@ typedef struct {
 	struct mq_attr	msgq_attr;
 } t_player;
 
+/* SHM data structure, each player can access it */
+typedef struct {
+
+	int		shm_fd;
+	int		is_end;
+	short		player_count;
+	short		team_player[7];
+	short		board[BOARD_WIDTH][BOARD_HEIGHT];
+	short		team_id[7][60];
+
+} t_data;
+
+/* Use for return value to get player position */
 typedef	struct {
 	int	width;
 	int	height;
 } t_player_pos;
 
+/* Global variable */
 extern t_data	*data;
 extern t_player player;
 extern volatile sig_atomic_t loop;
@@ -106,7 +111,6 @@ t_data
 int
 init_msgq();
 
-
 /*
  * Clear IPC shared memory and semaphore, exit if fail
  */
@@ -129,6 +133,22 @@ find_player_position(int player_id);
 /* Tool used to print game board and some usefull informations */
 void
 print_board();
+
+/* Delete player ID on is team */
+void
+del_team_player();
+
+/* Add player ID on is team */
+void
+add_team_player();
+
+/* Get team number of player */
+int
+get_player_team(int player_id);
+
+/* Check if IPC is alive and if it can mouv, do mouv depend on msgq*/
+int
+mouv();
 
 
 #endif

@@ -1,6 +1,6 @@
 #include "../include/lem-ipc.h"
 
-void	
+void
 start_routine()
 {
 	put_player_on_board();
@@ -12,8 +12,7 @@ start_routine()
 		if (player.is_first == IS_FIRST) {
 			print_board();
 		}
-		else
-			ft_printf("I'm player [%d]\n", player.player_id);
+		mouv();
 		sem_post(player.sem);
 	}
 	return;
