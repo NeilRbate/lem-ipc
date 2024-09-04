@@ -6,12 +6,12 @@
  * - Choose mouv to do
  */
 
-static int
+	static int
 check_down(t_player_pos pos)
 {
 	/* Return 0 if case is empty, 1 for ennemy, 2 for allies*/
 	/* Return  -1 if out of bound */
-	
+
 	int	ret;
 
 	if (pos.height == BOARD_HEIGHT - 1)
@@ -23,12 +23,12 @@ check_down(t_player_pos pos)
 }
 
 
-static int
+	static int
 check_up(t_player_pos pos)
 {
 	/* Return 0 if case is empty, 1 for ennemy, 2 for allies*/
 	/* Return  -1 if out of bound */
-	
+
 	int	ret;
 
 	if (pos.height == 0)
@@ -39,12 +39,12 @@ check_up(t_player_pos pos)
 	return 0;
 }
 
-static int
+	static int
 check_right(t_player_pos pos)
 {
 	/* Return 0 if case is empty, 1 for ennemy, 2 for allies*/
 	/* Return  -1 if out of bound */
-	
+
 	int ret;
 
 	if (pos.width == BOARD_WIDTH - 1)
@@ -53,15 +53,15 @@ check_right(t_player_pos pos)
 	if (ret != 0)
 		return get_player_team(ret) == player.team_id ? 2 : 1;
 	return 0;
-	
+
 }
 
-static int
+	static int
 check_left(t_player_pos pos)
 {
 	/* Return 0 if case is empty, 1 for ennemy, 2 for allies*/
 	/* Return  -1 if out of bound */
-	
+
 	int ret;
 
 	if (pos.width == 0)
@@ -72,7 +72,7 @@ check_left(t_player_pos pos)
 	return 0;
 }
 
-static void
+	static void
 im_alive(int left, int right, int up, int down)
 {
 	int	ennemy_count = 0;
@@ -89,15 +89,41 @@ im_alive(int left, int right, int up, int down)
 		exit(EXIT_SUCCESS);
 }
 
-/*
-static void
+	static void
 check_msgq()
 {
-	
-}
-*/
 
-int
+	/* This function bug, error on message receive: Message too long */
+
+	char	buff[MSGQ_SIZE];
+	int		retval;
+
+	ft_bzero(buff, MSGQ_SIZE);
+
+	buff[0] = 'B'; 
+	if ((retval = mq_send (player.msgq, buff, ft_strlen(buff), 0)) == -1) {
+		perror("errorL mq_send");
+	}
+	while(1) {
+		if ((retval = mq_receive (player.msgq, buff, (size_t)MSGQ_SIZE - 1, NULL)) == -1) {
+			perror("error: mq_receive");
+			exit (EXIT_FAILURE);
+			if (retval > 0)
+				ft_printf(buff);
+			else
+				break;
+		}
+	}
+
+	buff[0] = 'B'; 
+	ft_printf("buff -> %s\n", buff);
+	if ((retval = mq_send (player.msgq, buff, ft_strlen(buff), 0)) == -1) {
+		perror("errorL mq_send");
+	}
+
+}
+
+	int
 mouv()
 {
 	t_player_pos pos = find_player_position(player.player_id);
@@ -110,6 +136,7 @@ mouv()
 	down = check_down(pos);
 
 	im_alive(left, right, up, down);
+	check_msgq();
 
 	return 0;
 

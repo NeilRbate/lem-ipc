@@ -34,7 +34,7 @@
 
 #define	SEM_KEY		"/SEM_KEY\0"
 
-#define	MSGQ_SIZE	1024
+#define	MSGQ_SIZE	256
 #define	MSGQ_COUNT	32
 
 #define	SHM_KEY		"/SHM_KEY\0"
