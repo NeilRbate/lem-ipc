@@ -11,7 +11,7 @@ init_msgq()
 	attr.mq_maxmsg = MSGQ_COUNT;
 	attr.mq_msgsize = MSGQ_SIZE;
 
-	mq = mq_open(MSGQ_KEY, O_CREAT | O_RDWR, 
+	mq = mq_open(MSGQ_KEY[player.team_id], O_CREAT | O_RDWR | O_NONBLOCK, 
 			S_IRUSR | S_IWUSR, NULL);
 
 	player.msgq_attr = attr;

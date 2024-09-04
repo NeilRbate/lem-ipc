@@ -34,7 +34,6 @@
 
 #define	SEM_KEY		"/SEM_KEY\0"
 
-#define	MSGQ_KEY	"/MSG_KEY\0"
 #define	MSGQ_SIZE	1024
 #define	MSGQ_COUNT	32
 
@@ -57,6 +56,12 @@
 #define WHT		"\x1B[37m"
 
 /*******PROTO ZONE*******/
+
+static const char MSGQ_KEY[7][11] = { "/MSG_KEY_0\0", "/MSG_KEY_1\0",
+																			"/MSG_KEY_2\0", "/MSG_KEY_3\0",
+																			"/MSG_KEY_4\0", "/MSG_KEY_5\0",
+																			"/MSG_KEY_6\0"};
+
 
 /* Struct for player data, each player have is own */
 typedef struct {

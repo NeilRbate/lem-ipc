@@ -20,11 +20,13 @@ clear_ipcs()
 	clear_player_position();
 	if (player.is_first == IS_FIRST)
 		data->is_end = IS_END;
+	if (data->team_player[player.team_id] == 0)
+		mq_unlink(MSGQ_KEY[player.team_id - 1]);
 	sem_post(player.sem);
 	if (data->player_count <= 0) {
 		sem_close(player.sem);
 		sem_unlink(SEM_KEY);
-		mq_unlink(MSGQ_KEY);
+		mq_unlink(MSGQ_KEY[player.team_id - 1]);
 		shm_unlink(SHM_KEY);
 		munmap(data, sizeof(t_data));
 	}

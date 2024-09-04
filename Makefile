@@ -1,11 +1,9 @@
-CC = gcc
+CC = cc
 
 CFLAGS = -Wall \
 	 -Wextra \
 	 -Werror \
-	 -lpthread \
-	 -lrt \
-	 -g -fsanitize=address -fsanitize=undefined
+	 -g 
 
 NAME = lemipc 
 

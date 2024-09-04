@@ -60,7 +60,7 @@ exist:
 	/* init semaphore and message queue */
 	player.sem = init_sem();
 
-	init_msgq(data);
+	init_msgq();
 	
 	/* Init player value */
 	init_player();

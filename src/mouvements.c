@@ -89,6 +89,14 @@ im_alive(int left, int right, int up, int down)
 		exit(EXIT_SUCCESS);
 }
 
+/*
+static void
+check_msgq()
+{
+	
+}
+*/
+
 int
 mouv()
 {
