@@ -14,7 +14,8 @@ SRCS = src/main.c \
        src/init_shm.c \
        src/init_msgq.c \
        src/clear_ipcs.c \
-       src/routine.c
+       src/routine.c \
+       src/helpers.c
 
 LIBFT = -L. libft/libft.a 
 

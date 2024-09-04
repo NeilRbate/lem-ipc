@@ -38,12 +38,11 @@ t_data
 
 	/* Close shm fd */
 	close(fd);
-
 	if (data == MAP_FAILED)
 		goto failure;
 
+	/* Set t_data to 0 */
 	ft_memset(data, 0, sizeof(t_data));
-	ft_printf("Create new shared memory !\n");
 
 exist:
 	/* init semaphore and message queue */
@@ -51,6 +50,7 @@ exist:
 
 	init_msgq(data);
 	
+	/* Init player value */
 	sem_wait(player.sem);
 	data->player_count++;
 	player.player_id = data->player_count;

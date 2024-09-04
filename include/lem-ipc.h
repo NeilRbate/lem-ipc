@@ -47,6 +47,15 @@
 #define IS_FIRST	0
 #define IS_END		1
 
+#define RESET		"\x1B[0m"
+#define RED		"\x1B[31m"
+#define GRN		"\x1B[32m"
+#define YEL		"\x1B[33m"
+#define BLU		"\x1B[34m"
+#define MAG		"\x1B[35m"
+#define CYN		"\x1B[36m"
+#define WHT		"\x1B[37m"
+
 //*******PROTO ZONE*******
 
 typedef struct {
@@ -68,6 +77,10 @@ typedef struct {
 	struct mq_attr	msgq_attr;
 } t_player;
 
+typedef	struct {
+	int	width;
+	int	height;
+} t_player_pos;
 
 extern t_data	*data;
 extern t_player player;
@@ -101,11 +114,21 @@ void
 clear_ipcs();
 
 
-/*
- * Game routine
- */
+/* Game routine */
 void	
 start_routine();
+
+/* Tool who put player on board using rand placement */
+void	
+put_player_on_board();
+
+/* Tool to fin position of player on the board */
+t_player_pos
+find_player_position(int player_id);
+
+/* Tool used to print game board and some usefull informations */
+void
+print_board();
 
 
 #endif

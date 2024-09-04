@@ -1,5 +1,13 @@
 #include "../include/lem-ipc.h"
 
+static void
+clear_player_position()
+{
+	t_player_pos pos = find_player_position(player.player_id);
+	if (data->board[pos.width][pos.height] == player.player_id)
+		data->board[pos.width][pos.height] = 0;
+}
+
 void
 clear_ipcs()
 {
@@ -8,6 +16,7 @@ clear_ipcs()
 	sem_wait(player.sem);
 	data->player_count--;
 	data->team_player[player.team_id]--;
+	clear_player_position();
 	if (player.is_first == IS_FIRST)
 		data->is_end = IS_END;
 	sem_post(player.sem);
