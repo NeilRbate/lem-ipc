@@ -4,6 +4,7 @@
 mqd_t
 init_msgq()
 {
+	/* Create shared msgq and return status */
 	mqd_t	mq;
 	struct	mq_attr	attr;
 
@@ -17,6 +18,7 @@ init_msgq()
 
 	if (mq == -1) {
 		perror("msgq error");
+		sem_post(player.sem);
 		exit(EXIT_FAILURE);
 	}
 

@@ -29,8 +29,8 @@
 //*******DEFINE ZONE******
 
 #define PLAYER_MAX	60
-#define	BOARD_WIDTH	8
-#define	BOARD_HEIGHT	8
+#define	BOARD_WIDTH	16
+#define	BOARD_HEIGHT	16
 
 #define	SEM_KEY		"/SEM_KEY\0"
 
@@ -44,11 +44,15 @@
 #define	SUCCESS		0x000
 #define	FAILURE		0xfff
 
+#define IS_FIRST	0
+#define IS_END		1
+
 //*******PROTO ZONE*******
 
 typedef struct {
 
 	int	shm_fd;
+	int	is_end;
 	short	player_count;
 	short	team_player[9];
 	short	board[BOARD_WIDTH][BOARD_HEIGHT];
@@ -67,6 +71,7 @@ typedef struct {
 
 extern t_data	*data;
 extern t_player player;
+extern volatile sig_atomic_t loop;
 
 /*
  * Init IPC semaphoreand return sem_t struct

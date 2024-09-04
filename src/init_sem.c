@@ -8,7 +8,6 @@ sem_t
 
 	sem = sem_open(SEM_KEY, O_RDWR);
 	if (sem != SEM_FAILED) {
-		player.sem = sem;
 		return sem;
 	}
 
@@ -18,7 +17,6 @@ sem_t
 		perror("semaphore error");
 		exit(EXIT_FAILURE);
 	}
-	player.sem = sem;
 
 	return sem;
 }

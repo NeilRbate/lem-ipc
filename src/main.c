@@ -2,19 +2,30 @@
 
 t_data *data;
 t_player player;
+volatile sig_atomic_t loop = 1;
+
 
 void	signalHandler(int _)
 {
 	/* Signal endler, here to execute atexit() on ctrl-c */
 	(void)_;
-	ft_printf("signal catch !\n");
-	exit(EXIT_FAILURE);
+	if (player.sem)
+		sem_post(player.sem);
+	loop = 0;
+	//exit(EXIT_FAILURE);
+}
+
+void	print_usage()
+{
+	ft_putstr_fd("lem-ipc invalid usage\n", 1);
+	ft_putstr_fd("use: ./lem-ipc [team]\n", 1);
+	ft_putstr_fd("team need to be a valid number between [0-9]\n", 1);
 }
 
 int	main(int argc, char **argv)
 {
 	if (argc != 2 || ft_strlen(argv[1]) > 1 || !ft_isdigit(argv[1][0])) {
-		ft_printf("lem-ipc invalid usage\nuse: ./lem-ipc [team]\nteam need to be a valid number between [0-9]\n");
+		print_usage();
 		exit(EXIT_FAILURE);
 	}
 	
@@ -30,8 +41,7 @@ int	main(int argc, char **argv)
 	/* Init data */
 	data = init_shm();
 
-	ft_printf("hello from player[%d] in team [%d] !\n", player.player_id, player.team_id);
-
+	/* Start game routine */
 	start_routine();
 	
 	return	0;

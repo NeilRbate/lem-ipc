@@ -1,6 +1,5 @@
 #include "../include/lem-ipc.h"
 
-
 t_data
 *init_shm()
 {
@@ -18,7 +17,6 @@ t_data
 
 		if (data == MAP_FAILED)
 			goto failure;
-		ft_printf("Join existing shared memory !\n");
 		player.is_first = 1;
 		goto exist;
 	}
@@ -49,22 +47,20 @@ t_data
 
 exist:
 	/* init semaphore and message queue */
-	init_sem();
+	player.sem = init_sem();
+
 	init_msgq(data);
-
+	
 	sem_wait(player.sem);
-
 	data->player_count++;
-	data->team_player[player.team_id]++;
 	player.player_id = data->player_count;
-
+	data->team_player[player.team_id]++;
 	sem_post(player.sem);
+
 	return data;
 
 failure:
 
 	perror("shm_init error");
 	exit(EXIT_FAILURE);
-
-	return NULL;
 }
