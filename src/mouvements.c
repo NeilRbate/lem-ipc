@@ -89,36 +89,51 @@ im_alive(int left, int right, int up, int down)
 		exit(EXIT_SUCCESS);
 }
 
+static t_player_pos
+find_nearest_target()
+{
+
+}
+
+static void
+mouv_to_target(int target_id)
+{
+	//Find nearest target
+	//Find best mouv (left/right/up/down)
+	
+}
+
 static void
 check_msgq()
 {
-
-	/* This function bug, error on message receive: Message too long */
-
-	char	buff[MSGQ_SIZE];
+	char	buff[8200];
 	int		retval;
 
-	ft_bzero(buff, MSGQ_SIZE);
+	ft_bzero(buff, 8200);
 
-	buff[0] = 'B'; 
-	if ((retval = mq_send (player.msgq, buff, ft_strlen(buff), 0)) == -1) {
-		perror("error mq_send");
-	}
-	ft_bzero(buff, MSGQ_SIZE);
-
-	while(1) {
-		if ((retval = mq_receive (player.msgq, buff, MSGQ_SIZE + 1, NULL)) == -1) {
-			perror("error: mq_receive");
-			exit (EXIT_FAILURE);
-			if (retval > 0)
-				ft_printf(buff);
-			else
+		if ((retval = mq_receive (player.msgq, buff, 8200, NULL)) == -1) {
+			//Set target
 				break;
 		}
 		else {
+			//Goto target send target to other and return
+			if ((retval = mq_send (player.msgq, buff, ft_strlen(buff), 0)) == -1)
+				perror("error mq_send");
 			ft_printf("msgq -> %s\n", buff);
+			return;
 		}
 	}
+
+	//Set a target for team
+	char	*c_id = ft_itoa(player.player_id);
+	buff[0] = 'I';
+	buff[1] = 'D';
+	ft_printf("c_id -> %s\n", c_id);
+	for(size_t  i = 2; i < (ft_strlen(c_id) + 2); i++)
+		buff[i] = c_id[i - 2];
+
+	if ((retval = mq_send (player.msgq, buff, ft_strlen(buff), 0)) == -1)
+		perror("error mq_send");
 
 }
 

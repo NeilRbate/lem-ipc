@@ -1,5 +1,8 @@
 #include "../include/lem-ipc.h"
 
+//#define	MSGQ_SIZE	32
+//#define	MSGQ_COUNT	32
+
 
 mqd_t
 init_msgq()
@@ -8,15 +11,14 @@ init_msgq()
 	mqd_t	mq;
 	struct	mq_attr	attr;
 
-	attr.mq_flags = O_NONBLOCK;
-	attr.mq_maxmsg = MSGQ_COUNT;
-	attr.mq_msgsize = MSGQ_SIZE;
-	attr.mq_curmsgs = 0;
+	ft_memset(&attr, 0x00, sizeof(struct mq_attr));
 
-	mq = mq_open(MSGQ_KEY[player.team_id], 
-			O_CREAT | O_RDWR | O_NONBLOCK, 0644, &attr);
 
-	player.msgq_attr = attr;
+	attr.mq_maxmsg = (long)MSGQ_COUNT;
+	attr.mq_msgsize = (long)MSGQ_SIZE;
+
+	mq = mq_open(MSGQ_KEY[player.team_id], O_CREAT | O_RDWR | O_NONBLOCK, 0644, NULL);
+
 
 	if ((int)mq == -1) {
 		perror("msgq error");
@@ -24,6 +26,7 @@ init_msgq()
 		exit(EXIT_FAILURE);
 	}
 
+	player.msgq_attr = attr;
 	player.msgq = mq;
 
 

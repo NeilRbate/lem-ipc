@@ -26,7 +26,7 @@ clear_ipcs()
 	if (data->player_count <= 0) {
 		sem_close(player.sem);
 		sem_unlink(SEM_KEY);
-		mq_unlink(MSGQ_KEY[player.team_id - 1]);
+		mq_unlink(MSGQ_KEY[player.team_id]);
 		shm_unlink(SHM_KEY);
 		munmap(data, sizeof(t_data));
 	}
