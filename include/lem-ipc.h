@@ -34,7 +34,7 @@
 
 #define	SEM_KEY		"/SEM_KEY\0"
 
-#define	MSGQ_SIZE	256
+#define	MSGQ_SIZE	128
 #define	MSGQ_COUNT	32
 
 #define	SHM_KEY		"/SHM_KEY\0"
@@ -57,10 +57,10 @@
 
 /*******PROTO ZONE*******/
 
-static const char MSGQ_KEY[7][11] = { "/MSG_KEY_0\0", "/MSG_KEY_1\0",
-																			"/MSG_KEY_2\0", "/MSG_KEY_3\0",
-																			"/MSG_KEY_4\0", "/MSG_KEY_5\0",
-																			"/MSG_KEY_6\0"};
+static const char MSGQ_KEY[7][11] = { "/MSGKEY0", "/MSGKEY1",
+																			"/MSGKEY2", "/MSGKEY3",
+																			"/MSGKEY4", "/MSGKEY5",
+																			"/MSGKEY6"};
 
 
 /* Struct for player data, each player have is own */
