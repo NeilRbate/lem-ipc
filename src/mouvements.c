@@ -73,56 +73,76 @@ check_left(t_player_pos pos)
 }
 
 static void
-im_alive(int left, int right, int up, int down)
+im_alive()
 {
+	t_player_pos pos = find_player_position(player.player_id);
+
+	player.around.left = check_left(pos);
+	player.around.right = check_right(pos);
+	player.around.up = check_up(pos);
+	player.around.down = check_down(pos);
+
 	int	ennemy_count = 0;
-	if (left == 1)
+	if (player.around.left == 1)
 		ennemy_count++;
-	if (right == 1)
+	if (player.around.right == 1)
 		ennemy_count++;
-	if (up == 1)
+	if (player.around.up == 1)
 		ennemy_count++;
-	if (down == 1)
+	if (player.around.down == 1)
 		ennemy_count++;
 
 	if (ennemy_count > 1)
 		exit(EXIT_SUCCESS);
 }
 
-static t_player_pos
+/* Return target id of -1 if no target */
+/*
+static int
 find_nearest_target()
 {
+	for(size_t i = 0; i < BOARD_WIDTH; i++) {
+		for(size_t j = 0; j < BOARD_HEIGHT; j++) {
 
+		}
+	}
+		
+
+	return -1;
 }
+*/
 
+/*
 static void
 mouv_to_target(int target_id)
 {
+	(void)target_id;
 	//Find nearest target
 	//Find best mouv (left/right/up/down)
 	
 }
+*/
 
 static void
-check_msgq()
+game_routine()
 {
 	char	buff[8200];
-	int		retval;
+	int	retval;
 
 	ft_bzero(buff, 8200);
 
-		if ((retval = mq_receive (player.msgq, buff, 8200, NULL)) == -1) {
-			//Set target
-				break;
-		}
-		else {
-			//Goto target send target to other and return
-			if ((retval = mq_send (player.msgq, buff, ft_strlen(buff), 0)) == -1)
-				perror("error mq_send");
-			ft_printf("msgq -> %s\n", buff);
-			return;
-		}
+	/* Check if msg is present in msgq */
+	if ((retval = mq_receive (player.msgq, buff, 8200, NULL)) == -1) {
+		/* No msg, set a target, send it to other and goto target */
+		//target = find_nearest_target();
+		//return;
 	}
+
+	/* Target in msgq, resend to other player and goto target */
+	if ((retval = mq_send (player.msgq, buff, ft_strlen(buff), 0)) == -1)
+		perror("error mq_send");
+	ft_printf("msgq -> %s\n", buff);
+	return;
 
 	//Set a target for team
 	char	*c_id = ft_itoa(player.player_id);
@@ -131,6 +151,7 @@ check_msgq()
 	ft_printf("c_id -> %s\n", c_id);
 	for(size_t  i = 2; i < (ft_strlen(c_id) + 2); i++)
 		buff[i] = c_id[i - 2];
+	free(c_id);
 
 	if ((retval = mq_send (player.msgq, buff, ft_strlen(buff), 0)) == -1)
 		perror("error mq_send");
@@ -140,18 +161,8 @@ check_msgq()
 int
 mouv()
 {
-	t_player_pos pos = find_player_position(player.player_id);
-
-	int left, right, up, down;
-
-	left = check_left(pos);
-	right = check_right(pos);
-	up = check_up(pos);
-	down = check_down(pos);
-
-	im_alive(left, right, up, down);
-	check_msgq();
+	im_alive();
+	game_routine();
 
 	return 0;
-
 }

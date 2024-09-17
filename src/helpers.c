@@ -87,7 +87,6 @@ void
 print_board()
 {
 	/* Get number of team alive */
-	system("clear");
 		
 	/* Print board and infos about team */
 	print_team_spec();

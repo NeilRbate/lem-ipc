@@ -9,7 +9,6 @@ init_player()
 	data->team_player[player.team_id]++;
 	add_team_player();
 	sem_post(player.sem);
-
 }
 
 t_data

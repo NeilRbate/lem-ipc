@@ -7,6 +7,7 @@ start_routine()
 	while(loop){
 		sleep(1);
 		sem_wait(player.sem);
+		system("clear");
 		if (data->is_end == IS_END)
 			break;
 		if (player.is_first == IS_FIRST) {

@@ -59,6 +59,13 @@
 
 static const char MSGQ_KEY[7][9] = { "/MSGKEY0", "/MSGKEY1","/MSGKEY2", "/MSGKEY3","/MSGKEY4", "/MSGKEY5","/MSGKEY6"};
 
+/* Use to stock array content between player */
+typedef struct {
+	int left;
+	int right;
+	int up;
+	int down;
+} t_player_around;
 
 /* Struct for player data, each player have is own */
 typedef struct {
@@ -67,7 +74,8 @@ typedef struct {
 	int	is_first;
 	sem_t	*sem;
 	mqd_t	msgq;
-	struct mq_attr	msgq_attr;
+	struct	mq_attr	msgq_attr;
+	t_player_around	around;
 } t_player;
 
 /* SHM data structure, each player can access it */
@@ -87,6 +95,7 @@ typedef	struct {
 	int	width;
 	int	height;
 } t_player_pos;
+
 
 /* Global variable */
 extern t_data	*data;

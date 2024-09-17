@@ -7,12 +7,11 @@ volatile sig_atomic_t loop = 1;
 
 void	signalHandler(int _)
 {
-	/* Signal endler, here to execute atexit() on ctrl-c */
+	/* Signal endler, here to execute atexit() */
 	(void)_;
+	loop = 0;
 	if (player.sem)
 		sem_post(player.sem);
-	loop = 0;
-	//exit(EXIT_FAILURE);
 }
 
 void	print_usage()
