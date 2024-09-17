@@ -54,6 +54,7 @@ t_data
 
 	/* Set t_data to 0 */
 	ft_memset(data, 0, sizeof(t_data));
+	data->is_start = 0;
 
 exist:
 	/* init semaphore and message queue */

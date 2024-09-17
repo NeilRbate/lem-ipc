@@ -21,7 +21,7 @@ clear_ipcs()
 	if (player.is_first == IS_FIRST)
 		data->is_end = IS_END;
 	if (data->team_player[player.team_id] == 0)
-		mq_unlink(MSGQ_KEY[player.team_id - 1]);
+		mq_unlink(MSGQ_KEY[player.team_id]);
 	sem_post(player.sem);
 	if (data->player_count <= 0) {
 		sem_close(player.sem);

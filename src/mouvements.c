@@ -96,22 +96,6 @@ im_alive()
 		exit(EXIT_SUCCESS);
 }
 
-/* Return target id of -1 if no target */
-/*
-static int
-find_nearest_target()
-{
-	for(size_t i = 0; i < BOARD_WIDTH; i++) {
-		for(size_t j = 0; j < BOARD_HEIGHT; j++) {
-
-		}
-	}
-		
-
-	return -1;
-}
-*/
-
 /*
 static void
 mouv_to_target(int target_id)
@@ -124,34 +108,48 @@ mouv_to_target(int target_id)
 */
 
 static void
+send_target_id(int target)
+{
+	char	*buff;
+
+	buff = ft_itoa(target);
+
+	if (!buff) {
+		perror("malloc");
+		exit(EXIT_FAILURE);
+	}
+
+	if (mq_send (player.msgq, buff, ft_strlen(buff), 0) == -1)
+		perror("error mq_send");
+	free(buff);
+	return;
+}
+
+static void
 game_routine()
 {
 	char	buff[8200];
-	int	retval;
+	int	retval, target;
 
 	ft_bzero(buff, 8200);
 
+
 	/* Check if msg is present in msgq */
-	if ((retval = mq_receive (player.msgq, buff, 8200, NULL)) == -1) {
+	if (mq_receive (player.msgq, buff, 8200, NULL) == -1) {
 		/* No msg, set a target, send it to other and goto target */
-		//target = find_nearest_target();
-		//return;
+		target = find_nearest_target();
+		if (target != -1 && target != player.player_id
+			&& get_player_team(target) != player.team_id) {
+			send_target_id(target);
+			//Mouv to target
+			ft_printf("Nearest target id -> %d\n", target);
+		}
+		return;
 	}
-
-	/* Target in msgq, resend to other player and goto target */
-	if ((retval = mq_send (player.msgq, buff, ft_strlen(buff), 0)) == -1)
-		perror("error mq_send");
-	ft_printf("msgq -> %s\n", buff);
+	target = atoi(buff);
+	send_target_id(target);
+	ft_printf("Target id -> %d\n", target);
 	return;
-
-	//Set a target for team
-	char	*c_id = ft_itoa(player.player_id);
-	buff[0] = 'I';
-	buff[1] = 'D';
-	ft_printf("c_id -> %s\n", c_id);
-	for(size_t  i = 2; i < (ft_strlen(c_id) + 2); i++)
-		buff[i] = c_id[i - 2];
-	free(c_id);
 
 	if ((retval = mq_send (player.msgq, buff, ft_strlen(buff), 0)) == -1)
 		perror("error mq_send");

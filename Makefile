@@ -1,9 +1,9 @@
-CC = cc
+CC = gcc
 
 CFLAGS = -Wall \
 	 -Wextra \
 	 -Werror \
-	 -g 
+	 -g
 
 NAME = lemipc 
 

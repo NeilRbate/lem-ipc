@@ -83,6 +83,7 @@ typedef struct {
 
 	int		shm_fd;
 	int		is_end;
+	int		is_start;
 	short		player_count;
 	short		team_player[7];
 	short		board[BOARD_WIDTH][BOARD_HEIGHT];
@@ -103,7 +104,7 @@ extern t_player player;
 extern volatile sig_atomic_t loop;
 
 /*
- * Init IPC semaphoreand return sem_t struct
+ * Init IPC semaphore and return sem_t struct
  */
 sem_t
 *init_sem();
@@ -160,6 +161,13 @@ get_player_team(int player_id);
 /* Check if IPC is alive and if it can mouv, do mouv depend on msgq*/
 int
 mouv();
+
+/* Find nearest target from player pos
+ * Return target ID or -1 if no target is on board 
+ * */
+int
+find_nearest_target();
+
 
 
 #endif

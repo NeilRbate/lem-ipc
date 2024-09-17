@@ -130,3 +130,40 @@ put_player_on_board()
 	}
 	sem_post(player.sem);
 }
+
+int
+find_nearest_target()
+{
+	t_player_pos	pos = find_player_position(player.player_id);
+	t_player_pos	nearest_pos;
+
+	/* If other player is near current player, return is ID */
+	if (player.around.left == 1)
+		return data->board[pos.width - 1][pos.height];
+	else if (player.around.right == 1)
+		return data->board[pos.width + 1][pos.height];
+	else if (player.around.up == 1)
+		return data->board[pos.width][pos.height - 1];
+	else if (player.around.down== 1)
+		return data->board[pos.width][pos.height + 1];
+		
+	nearest_pos.width = 100;
+	nearest_pos.height = 100;
+	/* Find nearest player in array */
+	for(int i = 0; i < BOARD_WIDTH; i++) {
+		for(int j = 0; j < BOARD_HEIGHT; j++) {
+			int	id = data->board[i][j];
+			if (id != 0 && id != player.player_id 
+				&& get_player_team(id) != player.team_id) {
+				if (abs(i - pos.width) < nearest_pos.width
+					&& abs(j - pos.height) < nearest_pos.height) {
+					nearest_pos.width = i;
+					nearest_pos.height = j;
+				}
+			}
+		}
+	}
+	if (nearest_pos.width != 100)
+		return data->board[nearest_pos.width][nearest_pos.height];
+	return -1;
+}
