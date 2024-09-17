@@ -60,7 +60,8 @@
 
 /*******PROTO ZONE*******/
 
-static const char MSGQ_KEY[7][9] = { "/MSGKEY0", "/MSGKEY1","/MSGKEY2", "/MSGKEY3","/MSGKEY4", "/MSGKEY5","/MSGKEY6"};
+static const char MSGQ_KEY[7][9] = { "/MSGKEY0", "/MSGKEY1","/MSGKEY2"
+	, "/MSGKEY3","/MSGKEY4", "/MSGKEY5","/MSGKEY6"};
 
 /* Use to stock array content between player */
 typedef struct {
@@ -179,6 +180,10 @@ get_active_team();
 /* Clear position of player on data->board */
 void
 clear_player_position();
+
+/* Create ID for new player */
+int
+get_new_player_id();
 
 
 #endif

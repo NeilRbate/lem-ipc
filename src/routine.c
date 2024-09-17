@@ -20,9 +20,8 @@ start_routine()
 
 		if (data->is_end == IS_END 
 		|| (data->is_start == 1 && get_active_team() == 1)) {
-			ft_printf("Team [%d] win !\n", player.team_id);
 			sem_post(player.sem);
-			break;
+			exit(EXIT_SUCCESS);
 		}
 		if (player.is_first == IS_FIRST)
 			print_board();

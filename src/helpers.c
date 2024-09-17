@@ -1,12 +1,33 @@
 #include "../include/lem-ipc.h"
 
+static int
+id_exist(int id) 
+{
+	for(size_t i = 0; i < BOARD_WIDTH; i++) {
+		for(size_t j = 0; j < BOARD_HEIGHT; j++) {
+			if (data->board[i][j] == id)
+				return -1;
+		}
+	}
+	return 0;
+}
+
+int
+get_new_player_id()
+{
+	int id = rand() % 99;
+	if (id_exist(id) == 0)
+		return id;
+	return get_new_player_id();
+}
+
 static void
 print_team_color(int i, int j, int id) 
 {
 	if (j == 0)
 		ft_printf("|");
 	if (id == 0) {
-		ft_printf("   |", data->board[i][j]);
+		ft_printf("   |");
 		return;
 	}
 	switch(get_player_team(id)) {
@@ -32,20 +53,22 @@ print_team_color(int i, int j, int id)
 			ft_printf(WHT);
 			break;
 	}
-	ft_printf(")*(" RESET, data->board[i][j]);
+	if (data->board[i][j] < 10)
+		ft_printf(" ");
+	ft_printf("%d " RESET, data->board[i][j]);
 	ft_printf("|");
 }
 
 static void
 print_team_spec()
 {
-	ft_printf(RED"Team [0]: %d player\n" RESET, data->team_player[0]);
-	ft_printf(GRN"Team [1]: %d player\n" RESET, data->team_player[1]);
-	ft_printf(YEL"Team [2]: %d player\n" RESET, data->team_player[2]);
-	ft_printf(BLU"Team [3]: %d player\n" RESET, data->team_player[3]);
-	ft_printf(MAG"Team [4]: %d player\n" RESET, data->team_player[4]);
-	ft_printf(CYN"Team [5]: %d player\n" RESET, data->team_player[5]);
-	ft_printf(WHT"Team [6]: %d player\n" RESET, data->team_player[6]);
+	ft_printf(RED "Team [0]: %d player\n" RESET, data->team_player[0]);
+	ft_printf(GRN "Team [1]: %d player\n" RESET, data->team_player[1]);
+	ft_printf(YEL "Team [2]: %d player\n" RESET, data->team_player[2]);
+	ft_printf(BLU "Team [3]: %d player\n" RESET, data->team_player[3]);
+	ft_printf(MAG "Team [4]: %d player\n" RESET, data->team_player[4]);
+	ft_printf(CYN "Team [5]: %d player\n" RESET, data->team_player[5]);
+	ft_printf(WHT "Team [6]: %d player\n" RESET, data->team_player[6]);
 }
 
 int

@@ -1,11 +1,5 @@
 #include "../include/lem-ipc.h"
 
-/* TODO :
- * - Make function to check all case between me, Left/Right/Up/Down: OK
- * - Check if i'm alive: OK
- * - Choose mouv to do
- */
-
 static int
 check_down(t_player_pos pos)
 {
@@ -14,7 +8,7 @@ check_down(t_player_pos pos)
 
 	int	ret;
 
-	if (pos.width == BOARD_WIDTH - 1)
+	if (pos.width >= BOARD_WIDTH - 1)
 		return -1;
 	ret = data->board[pos.width + 1][pos.height];
 	if (ret != 0)
@@ -31,7 +25,7 @@ check_up(t_player_pos pos)
 
 	int	ret;
 
-	if (pos.width == 0)
+	if (pos.width <= 0)
 		return -1;
 	ret = data->board[pos.width - 1][pos.height];
 	if (ret != 0)
@@ -47,7 +41,7 @@ check_right(t_player_pos pos)
 
 	int ret;
 
-	if (pos.height == BOARD_WIDTH - 1)
+	if (pos.height >= BOARD_WIDTH - 1)
 		return -1;
 	ret = data->board[pos.width][pos.height + 1];
 	if (ret != 0)
@@ -64,7 +58,7 @@ check_left(t_player_pos pos)
 
 	int ret;
 
-	if (pos.height == 0)
+	if (pos.height <= 0)
 		return -1;
 	ret = data->board[pos.width][pos.height - 1];
 	if (ret != 0)
@@ -94,14 +88,16 @@ im_alive()
 		ennemy_count++;
 
 	if (ennemy_count >= 2) {
-		ft_printf("I'm dead\n");
+		ft_printf("Player [%d] is dead\n", player.player_id);
 		if (player.is_first != IS_FIRST && data->player_count > 1) {
+			sem_post(player.sem);
 			exit(EXIT_SUCCESS);
 		}
 		player.im_alive = 0;
 		data->player_count--;
 		data->team_player[player.team_id]--;
 		clear_player_position();
+		sem_post(player.sem);
 
 		return -1;
 	}
@@ -137,13 +133,36 @@ go_left(t_player_pos pos)
 }
 
 static void
+random_mouv(t_player_pos pos)
+{
+
+	int	r = rand() % 4;
+
+	switch(r) {
+		case 0:
+			if (player.around.up == 0)
+				go_up(pos);
+			break;
+		case 1:
+			if (player.around.down == 0)
+				go_down(pos);
+			break;
+		case 2:
+			if (player.around.right == 0)
+				go_right(pos);
+			break;
+		case 3:
+			if (player.around.left == 0)
+				go_left(pos);
+			break;
+		}
+}
+
+static void
 mouv_to_target(int target_id)
 {
 	(void)target_id;
 	t_player_pos	pos = find_player_position(player.player_id);
-
-	ft_printf("left -> %d right -> %d up -> %d down -> %d\n", player.around.left, player.around.right, 
-			player.around.up, player.around.down);
 
 	if (player.nearest_target.width < pos.width && player.around.up == 0) {
 		if ((pos.width - 1) < 0)
@@ -161,25 +180,9 @@ mouv_to_target(int target_id)
 		if ((pos.height - 1) < 0)
 			return;
 		go_left(pos);
-	} else {
-		int	r = rand() % 4;
-
-		switch(r) {
-			case 0:
-				go_up(pos);
-				break;
-			case 1:
-				go_down(pos);
-				break;
-			case 2:
-				go_right(pos);
-				break;
-			case 3:
-				go_left(pos);
-				break;
-
-		}
-	}
+	} 
+	else 
+		random_mouv(pos);
 }
 
 static void
@@ -191,6 +194,7 @@ send_target_id(int target)
 
 	if (!buff) {
 		perror("malloc");
+		sem_post(player.sem);
 		exit(EXIT_FAILURE);
 	}
 
@@ -217,13 +221,11 @@ game_routine()
 			&& get_player_team(target) != player.team_id) {
 			send_target_id(target);
 			mouv_to_target(target);
-			ft_printf("Nearest target id -> %d\n", target);
 		}
 		return;
 	}
 	/* Msg on msgq, get target id, resend it to player and goto target */
 	target = atoi(buff);
-	ft_printf("Target id -> %d\n", target);
 	send_target_id(target);
 	player.nearest_target = find_player_position(target);
 	mouv_to_target(target);
@@ -241,8 +243,10 @@ clear_player_data()
 int
 mouv()
 {
-	if (im_alive() == -1)
+	if (im_alive() == -1) {
+		clear_player_data();
 		return 0;
+	}
 
 	game_routine();
 

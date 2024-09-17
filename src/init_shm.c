@@ -5,7 +5,7 @@ init_player()
 {
 	sem_wait(player.sem);
 	data->player_count++;
-	player.player_id = data->player_count;
+	player.player_id = get_new_player_id();
 	player.im_alive = 1;
 	data->team_player[player.team_id]++;
 	add_team_player();
@@ -63,7 +63,8 @@ exist:
 	init_msgq();
 	
 	/* Init player value */
-	init_player();
+	//if (player.is_first != IS_FIRST)
+		init_player();
 
 	return data;
 

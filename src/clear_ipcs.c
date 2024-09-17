@@ -15,10 +15,12 @@ clear_ipcs()
 	if (!data)
 		return;
 	sem_wait(player.sem);
-	data->player_count--;
-	data->team_player[player.team_id]--;
-	clear_player_position();
-	if (player.is_first == IS_FIRST && data->player_count == 0)
+	if (player.is_first != IS_FIRST || player.im_alive == 1) {
+		data->player_count--;
+		data->team_player[player.team_id]--;
+		clear_player_position();
+	}
+	if (data->player_count == 0)
 		data->is_end = IS_END;
 	if (data->team_player[player.team_id] == 0)
 		mq_unlink(MSGQ_KEY[player.team_id]);
