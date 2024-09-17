@@ -26,6 +26,9 @@
 /* For Signal */
 #include <signal.h>
 
+/* For rand */
+#include <time.h>
+
 /*******DEFINE ZONE******/
 
 #define PLAYER_MAX	60
@@ -67,15 +70,23 @@ typedef struct {
 	int down;
 } t_player_around;
 
+/* Use for return value to get player position */
+typedef	struct {
+	int	width;
+	int	height;
+} t_player_pos;
+
 /* Struct for player data, each player have is own */
 typedef struct {
-	int	player_id;
-	int	team_id;
-	int	is_first;
-	sem_t	*sem;
-	mqd_t	msgq;
-	struct	mq_attr	msgq_attr;
+	int		player_id;
+	int		team_id;
+	int		is_first;
+	int		im_alive;
+	struct		mq_attr	msgq_attr;
+	sem_t		*sem;
+	mqd_t		msgq;
 	t_player_around	around;
+	t_player_pos	nearest_target;
 } t_player;
 
 /* SHM data structure, each player can access it */
@@ -90,13 +101,6 @@ typedef struct {
 	short		team_id[7][60];
 
 } t_data;
-
-/* Use for return value to get player position */
-typedef	struct {
-	int	width;
-	int	height;
-} t_player_pos;
-
 
 /* Global variable */
 extern t_data	*data;
@@ -168,6 +172,13 @@ mouv();
 int
 find_nearest_target();
 
+/* Return number of active team, use to define when game start */
+int
+get_active_team();
+
+/* Clear position of player on data->board */
+void
+clear_player_position();
 
 
 #endif

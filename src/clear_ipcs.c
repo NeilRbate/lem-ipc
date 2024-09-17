@@ -1,6 +1,6 @@
 #include "../include/lem-ipc.h"
 
-static void
+void
 clear_player_position()
 {
 	t_player_pos pos = find_player_position(player.player_id);
@@ -18,7 +18,7 @@ clear_ipcs()
 	data->player_count--;
 	data->team_player[player.team_id]--;
 	clear_player_position();
-	if (player.is_first == IS_FIRST)
+	if (player.is_first == IS_FIRST && data->player_count == 0)
 		data->is_end = IS_END;
 	if (data->team_player[player.team_id] == 0)
 		mq_unlink(MSGQ_KEY[player.team_id]);

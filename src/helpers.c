@@ -83,11 +83,33 @@ add_team_player()
 	}
 }
 
+int
+get_active_team()
+{
+	int	active_team = 0;
+
+	if (data->team_player[0] > 0)
+		active_team++;
+	if (data->team_player[1] > 0)
+		active_team++;
+	if (data->team_player[2] > 0)
+		active_team++;
+	if (data->team_player[3] > 0)
+		active_team++;
+	if (data->team_player[4] > 0)
+		active_team++;
+	if (data->team_player[5] > 0)
+		active_team++;
+	if (data->team_player[6] > 0)
+		active_team++;
+
+	return active_team;
+}
+
 void
 print_board()
 {
 	/* Get number of team alive */
-		
 	/* Print board and infos about team */
 	print_team_spec();
 	for(size_t i = 0; i < BOARD_WIDTH; i++) {
@@ -163,7 +185,9 @@ find_nearest_target()
 			}
 		}
 	}
-	if (nearest_pos.width != 100)
+	if (nearest_pos.width != 100 && nearest_pos.height != 100) {
+		player.nearest_target = nearest_pos;
 		return data->board[nearest_pos.width][nearest_pos.height];
+	}
 	return -1;
 }

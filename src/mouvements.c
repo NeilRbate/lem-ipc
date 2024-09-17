@@ -14,9 +14,9 @@ check_down(t_player_pos pos)
 
 	int	ret;
 
-	if (pos.height == BOARD_HEIGHT - 1)
+	if (pos.width == BOARD_WIDTH - 1)
 		return -1;
-	ret = data->board[pos.width][pos.height + 1];
+	ret = data->board[pos.width + 1][pos.height];
 	if (ret != 0)
 		return get_player_team(ret) == player.team_id ? 2 : 1;
 	return 0;
@@ -31,9 +31,9 @@ check_up(t_player_pos pos)
 
 	int	ret;
 
-	if (pos.height == 0)
+	if (pos.width == 0)
 		return -1;
-	ret = data->board[pos.width][pos.height - 1];
+	ret = data->board[pos.width - 1][pos.height];
 	if (ret != 0)
 		return get_player_team(ret) == player.team_id ? 2 : 1;
 	return 0;
@@ -47,9 +47,9 @@ check_right(t_player_pos pos)
 
 	int ret;
 
-	if (pos.width == BOARD_WIDTH - 1)
+	if (pos.height == BOARD_WIDTH - 1)
 		return -1;
-	ret = data->board[pos.width + 1][pos.height];
+	ret = data->board[pos.width][pos.height + 1];
 	if (ret != 0)
 		return get_player_team(ret) == player.team_id ? 2 : 1;
 	return 0;
@@ -64,15 +64,15 @@ check_left(t_player_pos pos)
 
 	int ret;
 
-	if (pos.width == 0)
+	if (pos.height == 0)
 		return -1;
-	ret = data->board[pos.width - 1][pos.height];
+	ret = data->board[pos.width][pos.height - 1];
 	if (ret != 0)
 		return get_player_team(ret) == player.team_id ? 2 : 1;
 	return 0;
 }
 
-static void
+static int
 im_alive()
 {
 	t_player_pos pos = find_player_position(player.player_id);
@@ -83,6 +83,7 @@ im_alive()
 	player.around.down = check_down(pos);
 
 	int	ennemy_count = 0;
+
 	if (player.around.left == 1)
 		ennemy_count++;
 	if (player.around.right == 1)
@@ -92,20 +93,94 @@ im_alive()
 	if (player.around.down == 1)
 		ennemy_count++;
 
-	if (ennemy_count > 1)
-		exit(EXIT_SUCCESS);
+	if (ennemy_count >= 2) {
+		ft_printf("I'm dead\n");
+		if (player.is_first != IS_FIRST && data->player_count > 1) {
+			exit(EXIT_SUCCESS);
+		}
+		player.im_alive = 0;
+		data->player_count--;
+		data->team_player[player.team_id]--;
+		clear_player_position();
+
+		return -1;
+	}
+	return 0;
 }
 
-/*
+void
+go_up(t_player_pos pos)
+{
+	data->board[pos.width - 1][pos.height] = player.player_id;
+	data->board[pos.width][pos.height] = 0;
+}
+
+void
+go_down(t_player_pos pos)
+{
+	data->board[pos.width + 1][pos.height] = player.player_id;
+	data->board[pos.width][pos.height] = 0;
+}
+
+void
+go_right(t_player_pos pos)
+{
+	data->board[pos.width][pos.height + 1] = player.player_id;
+	data->board[pos.width][pos.height] = 0;
+}
+
+void
+go_left(t_player_pos pos)
+{
+	data->board[pos.width][pos.height - 1] = player.player_id;
+	data->board[pos.width][pos.height] = 0;
+}
+
 static void
 mouv_to_target(int target_id)
 {
 	(void)target_id;
-	//Find nearest target
-	//Find best mouv (left/right/up/down)
-	
+	t_player_pos	pos = find_player_position(player.player_id);
+
+	ft_printf("left -> %d right -> %d up -> %d down -> %d\n", player.around.left, player.around.right, 
+			player.around.up, player.around.down);
+
+	if (player.nearest_target.width < pos.width && player.around.up == 0) {
+		if ((pos.width - 1) < 0)
+			return;
+		go_up(pos);
+	} else if (player.nearest_target.width > pos.width && player.around.down == 0) {
+		if ((pos.width + 1) >= BOARD_WIDTH)
+			return;
+		go_down(pos);
+	} else if (player.nearest_target.height > pos.height && player.around.right == 0) {
+		if ((pos.height + 1) >= BOARD_HEIGHT)
+			return;
+		go_right(pos);
+	} else if (player.nearest_target.height < pos.height && player.around.left == 0) {
+		if ((pos.height - 1) < 0)
+			return;
+		go_left(pos);
+	} else {
+		int	r = rand() % 4;
+
+		switch(r) {
+			case 0:
+				go_up(pos);
+				break;
+			case 1:
+				go_down(pos);
+				break;
+			case 2:
+				go_right(pos);
+				break;
+			case 3:
+				go_left(pos);
+				break;
+
+		}
+	}
 }
-*/
 
 static void
 send_target_id(int target)
@@ -129,7 +204,7 @@ static void
 game_routine()
 {
 	char	buff[8200];
-	int	retval, target;
+	int	target;
 
 	ft_bzero(buff, 8200);
 
@@ -141,26 +216,37 @@ game_routine()
 		if (target != -1 && target != player.player_id
 			&& get_player_team(target) != player.team_id) {
 			send_target_id(target);
-			//Mouv to target
+			mouv_to_target(target);
 			ft_printf("Nearest target id -> %d\n", target);
 		}
 		return;
 	}
+	/* Msg on msgq, get target id, resend it to player and goto target */
 	target = atoi(buff);
-	send_target_id(target);
 	ft_printf("Target id -> %d\n", target);
+	send_target_id(target);
+	player.nearest_target = find_player_position(target);
+	mouv_to_target(target);
+
 	return;
+}
 
-	if ((retval = mq_send (player.msgq, buff, ft_strlen(buff), 0)) == -1)
-		perror("error mq_send");
-
+static void
+clear_player_data()
+{
+	ft_bzero(&player.around, sizeof(t_player_around));
+	ft_bzero(&player.nearest_target, sizeof(t_player_pos));
 }
 
 int
 mouv()
 {
-	im_alive();
+	if (im_alive() == -1)
+		return 0;
+
 	game_routine();
+
+	clear_player_data();
 
 	return 0;
 }

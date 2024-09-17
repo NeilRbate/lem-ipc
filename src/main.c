@@ -10,6 +10,8 @@ void	signalHandler(int _)
 	/* Signal endler, here to execute atexit() */
 	(void)_;
 	loop = 0;
+	if (player.is_first == IS_FIRST)
+		data->is_end = IS_END;
 	if (player.sem)
 		sem_post(player.sem);
 }
@@ -36,8 +38,11 @@ int	main(int argc, char **argv)
 	int cr = atexit(clear_ipcs);
 	assert(cr == 0);
 
-	/* Catch signal to execute clear_ipcs on close */
+	/* Catch signal to execute clear_ipcs on ctrl + * */
 	signal(SIGINT, signalHandler);
+	signal(SIGQUIT, signalHandler);
+
+	srand(time(NULL));
 
 	/* Init data */
 	data = init_shm();

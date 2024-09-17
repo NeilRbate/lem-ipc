@@ -6,6 +6,7 @@ init_player()
 	sem_wait(player.sem);
 	data->player_count++;
 	player.player_id = data->player_count;
+	player.im_alive = 1;
 	data->team_player[player.team_id]++;
 	add_team_player();
 	sem_post(player.sem);
@@ -54,7 +55,6 @@ t_data
 
 	/* Set t_data to 0 */
 	ft_memset(data, 0, sizeof(t_data));
-	data->is_start = 0;
 
 exist:
 	/* init semaphore and message queue */
