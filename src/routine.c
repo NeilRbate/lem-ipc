@@ -20,6 +20,7 @@ start_routine()
 
 		if (data->is_end == IS_END 
 		|| (data->is_start == 1 && get_active_team() == 1)) {
+			ft_printf("Game is ending !\n");
 			sem_post(player.sem);
 			exit(EXIT_SUCCESS);
 		}
